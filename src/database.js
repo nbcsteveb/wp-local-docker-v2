@@ -1,8 +1,10 @@
 const mysql = require( 'mysql' );
+const { getDockerIP } = require('./configure');
 
-const getConnection = function() {
+const getConnection = async function() {
+	const ip = await getDockerIP();
 	const connection = mysql.createConnection( {
-		host: '127.0.0.1',
+		host: ip,
 		user: 'root',
 		password: 'password',
 	} );
@@ -11,7 +13,7 @@ const getConnection = function() {
 };
 
 const create = async function( dbname ) {
-	const connection = getConnection();
+	const connection = await getConnection();
 
 	await new Promise( ( resolve, reject ) => {
 		connection.query( `CREATE DATABASE IF NOT EXISTS \`${ dbname }\`;`, function ( err ) {
@@ -27,7 +29,7 @@ const create = async function( dbname ) {
 };
 
 const deleteDatabase = async function( dbname ) {
-	const connection = getConnection();
+	const connection = await getConnection();
 
 	await new Promise( ( resolve, reject ) => {
 		connection.query( `DROP DATABASE IF EXISTS \`${ dbname }\`;`, function( err ) {
@@ -43,7 +45,7 @@ const deleteDatabase = async function( dbname ) {
 };
 
 const assignPrivs = async function ( dbname ) {
-	const connection = getConnection();
+	const connection = await getConnection();
 
 	await new Promise( ( resolve, reject ) => {
 		connection.query( `GRANT ALL PRIVILEGES ON \`${ dbname }\`.* TO 'wordpress'@'%' IDENTIFIED BY 'password';`, function( err ) {

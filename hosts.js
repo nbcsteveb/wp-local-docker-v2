@@ -2,6 +2,7 @@
 
 const yargs = require( 'yargs' );
 const hostile = require( 'hostile' );
+const { getDockerIP } = require( './src/configure' );
 
 function options( yargs ) {
 	yargs.positional( 'hosts', {
@@ -11,25 +12,29 @@ function options( yargs ) {
 }
 
 function add( { hosts } ) {
-	hostile.set( '127.0.0.1', hosts.join( ' ' ), function( err ) {
-		if ( err ) {
-			console.error( err.message );
-			process.exit( err.errno );
-		} else {
-			console.log( 'Added to hosts file successfully!' );
-		}
-	} );
+	getDockerIP().then(ip => {
+		hostile.set( ip, hosts.join( ' ' ), function( err ) {
+			if ( err ) {
+				console.error( err.message );
+				process.exit( err.errno );
+			} else {
+				console.log( 'Added to hosts file successfully!' );
+			}
+		} );
+	});
 }
 
 function remove( { hosts } ) {
-	hostile.remove( '127.0.0.1', hosts.join( ' ' ), function( err ) {
-		if ( err ) {
-			console.error( err.message );
-			process.exit( err.errno );
-		} else {
-			console.log( 'Removed from hosts file successfully!' );
-		}
-	} );
+	getDockerIP().then(ip => {
+		hostile.remove( ip, hosts.join( ' ' ), function( err ) {
+			if ( err ) {
+				console.error( err.message );
+				process.exit( err.errno );
+			} else {
+				console.log( 'Removed from hosts file successfully!' );
+			}
+		} );
+	});
 }
 
 // usage and help flag

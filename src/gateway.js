@@ -114,7 +114,7 @@ async function removeCacheVolume( docker, spinner ) {
  * here to connect the the MySQL port and will resolve the promise once MySQL sends data back indicating
  * MySQL is ready for work.
  */
-function waitForDB( spinner ) {
+function waitForDB( ip, spinner ) {
 	if ( spinner ) {
 		spinner.start( 'Waiting for MySQL...' );
 	} else {
@@ -125,7 +125,7 @@ function waitForDB( spinner ) {
 		const interval = setInterval( () => {
 			const netcat = new nc();
 
-			netcat.address( '127.0.0.1' );
+			netcat.address( ip );
 			netcat.port( 3306 );
 			netcat.connect();
 			netcat.on( 'data', function(  ) {
@@ -179,7 +179,9 @@ async function startGateway( spinner, pull ) {
 		spinner.succeed( 'Global services are running...' );
 	}
 
-	await waitForDB( spinner );
+	const ip = await config.getDockerIP();
+
+	await waitForDB( ip, spinner );
 }
 
 async function stopGateway( spinner ) {
