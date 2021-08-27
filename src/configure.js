@@ -19,6 +19,10 @@ function getGlobalDirectory() {
 	return path.join( getConfigDirectory(), 'global' );
 }
 
+async function getDockerIP() {
+	return await get( 'dockerMachineIP' );
+}
+
 async function getSslCertsDirectory( create = true ) {
 	const dir = path.join( getGlobalDirectory(), 'ssl-certs' );
 
@@ -76,7 +80,8 @@ function getDefaults() {
 		sitesPath: path.join( os.homedir(), 'wp-local-docker-sites' ),
 		snapshotsPath: path.join( os.homedir(), '.wpsnapshots' ),
 		manageHosts: true,
-		overwriteGlobal: true
+		overwriteGlobal: true,
+		dockerMachineIP: "127.0.0.1",
 	};
 }
 
@@ -177,6 +182,7 @@ module.exports = {
 	get,
 	set,
 	getConfigDirectory,
+	getDockerIP,
 	getGlobalDirectory,
 	getSslCertsDirectory,
 	createProxyConfig,
